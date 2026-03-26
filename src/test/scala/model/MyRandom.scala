@@ -1,6 +1,7 @@
 package model
 trait Random {
   def nextInt: (Int, Random)
+  def nextInt(x: Int): (Int, Random)
 }
 case class MyRandom(seed: Long)  extends Random {
   def nextInt: (Int, Random) = {
