@@ -14,7 +14,7 @@ object GameLogic {
 
     val isValidStart = board.get(coordFrom).contains(player)
     val isDestEmpty = !board.contains(coordTo)
-    NNNNN
+    
 
   }
 }
