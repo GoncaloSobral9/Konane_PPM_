@@ -4,6 +4,8 @@ import model.*
 import model.Stone.White
 import model.Stone.Black
 
+import scala.annotation.tailrec
+
 object GameLogic {
   def randomMove(lstOpenCoords: List[Coord2D], rand: MyRandom): (Coord2D, MyRandom) =
     val (index, newRand) = rand.nextInt(lstOpenCoords.length)
@@ -32,15 +34,42 @@ object GameLogic {
       (None, lstOpenCoords)
     } else {
       val dirR = math.signum(r2 - r1)
-      val DirC = math.signum(c2 - c1)
+      val dirC = math.signum(c2 - c1)
 
-      // 4. Se for válido:
-      //    - Remover a(s) pedra(s) inimiga(s) capturada(s) do ParMap[cite: 49, 50].
-      //    - Mover a pedra do jogador para a coordTo[cite: 59].
-      //    - Atualizar a lista de coordenadas livres (lstOpenCoords)[cite: 60].
-      //    - Retornar (Some(novoTabuleiro), novaListaLivre)[cite: 59, 60].
-      def isValidPath(from: Coord2D, to: Coord2D,)
-      // 5. Se inválido: retornar (None, lstOpenCoords)[cite: 59].
+      // 6. Função recursiva em cauda para processar múltiplos saltos na mesma direção
+      @tailrec
+      def checkJumps(currR: Int, currC: Int, captured: List[Coord2D]): Option[List[Coord2D]] = {
+        if (currR == r2 && currC == c2) {
+          Some(captured)
+        } else {
+          val enemyPos = (currR + dirR, currC + dirC)
+          val landPos = (currR + 2 * dirR, currC + 2 * dirC)
+          board.get(enemyPos) match {
+            case Some(stone) if stone == enemy =>
+              if (landPos == coordTo || !board.contains(landPos)) {
+                checkJumps(landPos._1, landPos._2, enemyPos :: captured)
+              } else {
+                None
+              }
+            case _ => None
+          }
+        }
+      }
+
+      // 7. Executar a função recursiva e processar o resultado com Pattern Matching
+      checkJumps(r1, c1, Nil) match {
+        case Some(capturedPieces) =>
+          val boardWithoutCaptured = capturedPieces.foldLeft(board)((b, pos) => b - pos)
+
+          val finalBoard = (boardWithoutCaptured - coordFrom) + (coordTo -> player)
+
+          val newOpenCoords = (coordFrom :: capturedPieces) ++ lstOpenCoords.filterNot(_ == coordTo)
+
+          (Some(finalBoard), newOpenCoords)
+
+        case None =>
+          (None, lstOpenCoords)
+      }
     }
   }
 }
