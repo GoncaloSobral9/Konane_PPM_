@@ -1,5 +1,7 @@
 package ui
 
+import model.*
+
 object BoardPrinter {
   //T4
   def displayBoard(board: Board, rows: Int, cols: Int): Unit = {
