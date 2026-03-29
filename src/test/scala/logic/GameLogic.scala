@@ -7,10 +7,12 @@ import model.Stone.Black
 import scala.annotation.tailrec
 
 object GameLogic {
+  //T1
   def randomMove(lstOpenCoords: List[Coord2D], rand: MyRandom): (Coord2D, MyRandom) =
     val (index, newRand) = rand.nextInt(lstOpenCoords.length)
     (lstOpenCoords(index), newRand)
 
+  //T2
   def play(board: Board, player: Stone, coordFrom: Coord2D, coordTo: Coord2D, lstOpenCoords: List[Coord2D]): (Option[Board], List[Coord2D]) = {
     // Definir o inimigo corretamente
     val enemy = if (player == Stone.Black) Stone.White else Stone.Black
@@ -70,6 +72,36 @@ object GameLogic {
         case None =>
           (None, lstOpenCoords)
       }
+    }
+  }
+
+  //T3
+  def playRandomly(board: Board, r: MyRandom, player: Stone, lstOpenCoords: List[Coord2D], f: (List[Coord2D], MyRandom) => (Coord2D, MyRandom)): (Option[Board], MyRandom, List[Coord2D], Option[Coord2D]) = {
+    val playerPos = board.filter {
+      case (_, Stone) => Stone == player
+
+    }.keys.toList
+
+    val validMoves = for {
+      from <- playerPos
+      to <- lstOpenCoords
+      (newBoard, newCords) = play(board, player, from, to, lstOpenCoords)
+      if newBoard.isDefined
+    } yield (from, to, newBoard, newCords)
+
+    validMoves match {
+      case Nil =>
+        (None, r, lstOpenCoords, None)
+
+      case moves =>
+        val validDestinations = moves.map { case (_, to, _, _) => to }.distinct
+        val (selectTo, nextRandom) = f(validDestinations, r)
+        moves.find { case (_, to, _, _) => to == selectTo } match {
+          case Some((_, _, newBoard, newCords)) => (newBoard, nextRandom, newCords, Some(selectTo))
+
+          case None =>
+            (None, r, lstOpenCoords, None)
+        }
     }
   }
 }
