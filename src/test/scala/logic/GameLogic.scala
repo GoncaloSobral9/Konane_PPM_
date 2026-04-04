@@ -78,7 +78,7 @@ object GameLogic {
   //T3
   def playRandomly(board: Board, r: MyRandom, player: Stone, lstOpenCoords: List[Coord2D], f: (List[Coord2D], MyRandom) => (Coord2D, MyRandom)): (Option[Board], MyRandom, List[Coord2D], Option[Coord2D]) = {
     val playerPos = board.filter {
-      case (_, Stone) => Stone == player
+      case (_, s) => s == player
 
     }.keys.toList
 
