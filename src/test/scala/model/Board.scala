@@ -24,7 +24,7 @@ object Board {
       (r == 0 || r == rows - 1) && (c == 0 || c == cols - 1)
 
     def isCenter(r: Int, c: Int): Boolean =
-      (r == rows / 2 || r == rows / 2 - 1) && (c == cols / 2 || c == cols / 2 - 1)
+      (r == rows / 2 || r == (rows - 1) / 2) && (c == cols / 2 || c == (cols - 1)/ 2)
 
     val isAdjacent = Math.abs(r1 - r2) + Math.abs(c1 - c2) == 1
 
