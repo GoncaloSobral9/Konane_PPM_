@@ -17,7 +17,7 @@ object Main {
     // 3 processar o resultado com Pattern Matching
     boardOpt match {
       case Some(initialBoard) =>
-        println(s"--- Tabuleiro de Kōnane Inicializado ---")
+        println(s"--- Tabuleiro de Konane Inicializado ---")
         println(s"Peças removidas com sucesso: $initialEmpty")
 
         //chamar o visualizador
