@@ -10,7 +10,7 @@ object GameLogic:
     val (index, newRand) = rand.nextInt(lstOpenCoords.length)
     (lstOpenCoords(index), newRand)
 
-  // verifica se um único salto é válido: ortogonal, distância 2,captura exatamente uma pedra inimiga no meio, e destino vazio.
+  // verifica se um unico salto é valido: ortogonal, distância 2,captura exatamente uma pedra inimiga no meio, e destino vazio.
   private def isSingleJumpValid(board: Board, player: Stone, from: Coord2D, to: Coord2D): Boolean =
     val enemy = if player == Stone.Black then Stone.White else Stone.Black
     val (r1, c1) = from
@@ -31,7 +31,7 @@ object GameLogic:
   // T2
   def play(board: Board, player: Stone, coordFrom: Coord2D, coordTo: Coord2D, lstOpenCoords: List[Coord2D]): (Option[Board], List[Coord2D]) =
 
-    //salto único
+    //salto unico
     if isSingleJumpValid(board, player, coordFrom, coordTo) then
       val captured = capturedPos(coordFrom, coordTo)
       // foldLeft para remover todas as posições afetadas de forma encadeada
@@ -57,7 +57,7 @@ object GameLogic:
                 val nextPos: Coord2D = (cr + dr, cc + dc)
                 if !visitados.contains(nextPos) && isSingleJumpValid(currBoard, player, currPos, nextPos) then
                   val cap = capturedPos(currPos, nextPos)
-                  // foldLeft para remover posição atual e capturada de forma encadeada
+                  // foldLeft para remover posicao atual e capturada de forma encadeada
                   val nb  = List(currPos, cap).foldLeft(currBoard)((b, pos) => b - pos) + (nextPos -> player)
                   val no  = currPos :: cap :: currOpen.filterNot(_ == nextPos)
                   Some((nb, nextPos, cap :: captured, no))
@@ -67,33 +67,33 @@ object GameLogic:
 
       procurarCaminhoSaltos(List((board, coordFrom, Nil, lstOpenCoords.filterNot(_ == coordFrom))), Set(coordFrom))
 
-  // devolve todos os destinos de salto único válidos a partir de uma posição
+  // devolve todos os destinos de salto unico validos a partir de uma posicao
   def validSingleJumps(board: Board, player: Stone, from: Coord2D): List[Coord2D] =
     val (r, c) = from
     List((r - 2, c), (r + 2, c), (r, c - 2), (r, c + 2))
       .filter(to => isSingleJumpValid(board, player, from, to))
 
-  // devolve todos os movimentos válidos para um jogador
+  // devolve todos os movimentos validos para um jogador
   def allValidMoves(board: Board, player: Stone): List[(Coord2D, Coord2D)] =
     board.filter { case (_, s) => s == player }
       .keys.toList
       .flatMap(from => validSingleJumps(board, player, from).map(to => (from, to)))
 
-  // T3 Joga de forma aleatória usando a função f para selecionar uma coordenada livre
+  // T3 joga de forma aleatoria usando a função f para selecionar uma coordenada livre
   def playRandomly(board: Board, r: MyRandom, player: Stone, lstOpenCoords: List[Coord2D], f: (List[Coord2D], MyRandom) => (Coord2D, MyRandom)): (Option[Board], MyRandom, List[Coord2D], Option[Coord2D]) =
-    // obtém todos os movimentos válidos (salto único) para o jogador
+    // obtem todos os movimentos validos (salto unico) para o jogador
     val moves = allValidMoves(board, player)
 
     moves match
       case Nil =>
-        // sem movimentos válidos — este jogador perde
+        // sem movimentos validos
         (None, r, lstOpenCoords, None)
       case _ =>
-        // seleciona aleatoriamente a partir das coordenadas de origem disponíveis
+        // seleciona aleatoriamente a partir das coordenadas de origem disponiveis
         val fromCoords = moves.map(_._1).distinct
         val (selectedFrom, r2) = f(fromCoords, r)
 
-        // para a origem selecionada, obtém destinos válidos e escolhe um aleatoriamente
+        // para a origem selecionada, obtem destinos válidos e escolhe um aleatoriamente
         val destinations = moves.collect { case (`selectedFrom`, to) => to }
         val (selectedTo, r3) = f(destinations, r2)
 
