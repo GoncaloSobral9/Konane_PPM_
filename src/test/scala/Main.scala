@@ -7,8 +7,8 @@ object Main {
 
   def main(args: Array[String]): Unit = {
     // 1 definir as coordenadas para a remocaoo inicial (Tarefa 1)
-    val r1 = (2, 2)
-    val r2 = (2, 3)
+    val r1 = (0, 0)
+    val r2 = (0, 1)
     
     // 2 chamar a função de inicializacao do teu objeto Board
     // Esta função já trata a criacao do tabuleiro completo e a validação das remocoes.
